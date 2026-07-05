@@ -1,0 +1,53 @@
+name: Bug report
+description: Report a defect in yeevy/laravel-centris
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **⚠️ Never paste real feed data or FTP credentials.** Rows from your Passerelle files contain confidential listing data — replace every value with synthetic ones before posting.
+
+        Parsing/sync-engine bugs likely belong in [yeevy/centris-passerelle](https://github.com/yeevy-ai/centris-passerelle/issues) — this repo covers the Laravel integration (commands, bindings, config, jobs).
+
+        *Les rapports en français sont les bienvenus.*
+  - type: input
+    id: package-version
+    attributes:
+      label: laravel-centris version
+      placeholder: v0.1.0
+    validations:
+      required: true
+  - type: input
+    id: laravel-version
+    attributes:
+      label: Laravel version
+      placeholder: "13.x"
+    validations:
+      required: true
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
+      placeholder: "8.3"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - centris:sync command
+        - centris:photos command / DownloadPhoto job
+        - FTP fetch / feed source config
+        - Container bindings / config
+        - Events
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Expected vs. actual behavior, relevant config (redact credentials), and any error output.
+    validations:
+      required: true

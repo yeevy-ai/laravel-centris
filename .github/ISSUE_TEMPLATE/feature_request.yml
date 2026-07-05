@@ -1,0 +1,19 @@
+name: Feature request
+description: Suggest an improvement to yeevy/laravel-centris
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: "*Les demandes en français sont les bienvenues.*"
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do that the wrapper doesn't support?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would the API, command, or config look like? Synthetic data only in examples.
