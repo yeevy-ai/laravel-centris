@@ -25,7 +25,7 @@
         "illuminate/contracts": "^12.0||^13.0",
         "psr/event-dispatcher": "^1.0",
         "spatie/laravel-package-tools": "^1.16",
-        "yeevy/centris-passerelle": "^0.2"
+        "yeevy/centris-passerelle": "^0.2 || ^0.3"
     },
     "require-dev": {
         "larastan/larastan": "^3.0",
