@@ -28,6 +28,7 @@ use Yeevy\CentrisPasserelle\Parser\RoomsParser;
 use Yeevy\CentrisPasserelle\Parser\UnitsParser;
 use Yeevy\CentrisPasserelle\Sync\ListingsSynchronizer;
 use Yeevy\CentrisPasserelle\Validation\SnapshotValidator;
+use Yeevy\LaravelCentris\Commands\SyncCommand;
 use Yeevy\LaravelCentris\Events\LaravelEventDispatcher;
 
 class CentrisServiceProvider extends PackageServiceProvider
@@ -36,7 +37,8 @@ class CentrisServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('centris')
-            ->hasConfigFile();
+            ->hasConfigFile()
+            ->hasCommand(SyncCommand::class);
     }
 
     public function packageRegistered(): void
