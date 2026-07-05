@@ -22,10 +22,16 @@
     ],
     "require": {
         "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.8",
         "illuminate/contracts": "^12.0||^13.0",
+        "league/flysystem": "^3.0",
+        "league/flysystem-ftp": "^3.0",
         "psr/event-dispatcher": "^1.0",
         "spatie/laravel-package-tools": "^1.16",
         "yeevy/centris-passerelle": "^0.2 || ^0.3"
+    },
+    "suggest": {
+        "league/flysystem-sftp-v3": "Rebind the FeedSource contract with an SFTP-backed FlysystemFeedSource if your agreement uses SFTP."
     },
     "require-dev": {
         "larastan/larastan": "^3.0",

@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Yeevy\CentrisPasserelle\Config\ColumnMap;
+use Yeevy\CentrisPasserelle\Contracts\FeedSource;
 use Yeevy\CentrisPasserelle\Contracts\ListingRepository;
 use Yeevy\CentrisPasserelle\Parser\AddendaParser;
 use Yeevy\CentrisPasserelle\Parser\AdditionalLinksParser;
@@ -30,6 +31,7 @@ use Yeevy\CentrisPasserelle\Sync\ListingsSynchronizer;
 use Yeevy\CentrisPasserelle\Validation\SnapshotValidator;
 use Yeevy\LaravelCentris\Commands\SyncCommand;
 use Yeevy\LaravelCentris\Events\LaravelEventDispatcher;
+use Yeevy\LaravelCentris\Feed\FeedSourceFactory;
 
 class CentrisServiceProvider extends PackageServiceProvider
 {
@@ -57,6 +59,8 @@ class CentrisServiceProvider extends PackageServiceProvider
         $this->app->singleton(BrokersParser::class, fn (Application $app) => new BrokersParser($this->columnMap('brokers'), $app->make(LoggerInterface::class)));
         $this->app->singleton(FirmsParser::class, fn (Application $app) => new FirmsParser($this->columnMap('firms'), $app->make(LoggerInterface::class)));
         $this->app->singleton(OfficesParser::class, fn (Application $app) => new OfficesParser($this->columnMap('offices'), $app->make(LoggerInterface::class)));
+
+        $this->app->singleton(FeedSource::class, fn () => (new FeedSourceFactory)->make());
 
         $this->app->singleton(ListingsSynchronizer::class, fn (Application $app) => new ListingsSynchronizer(
             repository: $app->make(ListingRepository::class),

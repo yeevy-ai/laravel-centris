@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Yeevy\LaravelCentris\Commands;
 
 use Illuminate\Console\Command;
+use InvalidArgumentException;
+use RuntimeException;
+use Yeevy\CentrisPasserelle\Contracts\FeedSource;
 use Yeevy\CentrisPasserelle\Contracts\ListingRepository;
 use Yeevy\CentrisPasserelle\Exceptions\ColumnMapMismatch;
 use Yeevy\CentrisPasserelle\Sync\ListingsSynchronizer;
@@ -12,7 +15,7 @@ use Yeevy\CentrisPasserelle\Sync\ListingsSynchronizer;
 class SyncCommand extends Command
 {
     protected $signature = 'centris:sync
-        {--path= : Snapshot directory or listings file (defaults to centris.feed_path)}
+        {--path= : Snapshot directory or listings file (defaults to the configured feed source)}
         {--file=INSCRIPTIONS.TXT : Listings filename inside the snapshot directory}';
 
     protected $description = 'Synchronize Centris Passerelle listings from a snapshot into your repository';
@@ -28,21 +31,24 @@ class SyncCommand extends Command
             return self::FAILURE;
         }
 
-        $path = $this->option('path') ?? config('centris.feed_path');
+        $path = $this->option('path');
 
-        if (! is_string($path) || $path === '') {
-            $this->error('No snapshot path — pass --path or set centris.feed_path.');
-
-            return self::FAILURE;
-        }
+        /** @var FeedSource|string $target */
+        $target = is_string($path) && $path !== ''
+            ? $path
+            : $this->laravel->make(FeedSource::class); // config-driven: local dir or FTP fetch
 
         $file = $this->option('file');
         $file = is_string($file) && $file !== '' ? $file : 'INSCRIPTIONS.TXT';
 
         try {
-            $result = $this->laravel->make(ListingsSynchronizer::class)->sync($path, $file);
+            $result = $this->laravel->make(ListingsSynchronizer::class)->sync($target, $file);
         } catch (ColumnMapMismatch $exception) {
             $this->error('Snapshot rejected: '.$exception->getMessage());
+
+            return self::FAILURE;
+        } catch (InvalidArgumentException|RuntimeException $exception) {
+            $this->error('Sync failed: '.$exception->getMessage());
 
             return self::FAILURE;
         }
