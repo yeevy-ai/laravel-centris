@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Yeevy\LaravelCentris;
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Yeevy\CentrisPasserelle\Config\ColumnMap;
+use Yeevy\CentrisPasserelle\Contracts\ListingRepository;
 use Yeevy\CentrisPasserelle\Parser\AddendaParser;
 use Yeevy\CentrisPasserelle\Parser\AdditionalLinksParser;
 use Yeevy\CentrisPasserelle\Parser\BrokersParser;
@@ -24,7 +26,9 @@ use Yeevy\CentrisPasserelle\Parser\RemarksParser;
 use Yeevy\CentrisPasserelle\Parser\RenovationsParser;
 use Yeevy\CentrisPasserelle\Parser\RoomsParser;
 use Yeevy\CentrisPasserelle\Parser\UnitsParser;
+use Yeevy\CentrisPasserelle\Sync\ListingsSynchronizer;
 use Yeevy\CentrisPasserelle\Validation\SnapshotValidator;
+use Yeevy\LaravelCentris\Events\LaravelEventDispatcher;
 
 class CentrisServiceProvider extends PackageServiceProvider
 {
@@ -51,6 +55,14 @@ class CentrisServiceProvider extends PackageServiceProvider
         $this->app->singleton(BrokersParser::class, fn (Application $app) => new BrokersParser($this->columnMap('brokers'), $app->make(LoggerInterface::class)));
         $this->app->singleton(FirmsParser::class, fn (Application $app) => new FirmsParser($this->columnMap('firms'), $app->make(LoggerInterface::class)));
         $this->app->singleton(OfficesParser::class, fn (Application $app) => new OfficesParser($this->columnMap('offices'), $app->make(LoggerInterface::class)));
+
+        $this->app->singleton(ListingsSynchronizer::class, fn (Application $app) => new ListingsSynchronizer(
+            repository: $app->make(ListingRepository::class),
+            parser: $app->make(ListingsParser::class),
+            validator: $app->make(SnapshotValidator::class),
+            events: new LaravelEventDispatcher($app->make(Dispatcher::class)),
+            logger: $app->make(LoggerInterface::class),
+        ));
 
         $this->app->singleton(SnapshotValidator::class, function (Application $app) {
             $sampleSize = config('centris.validation.sample_size', 50);
