@@ -45,6 +45,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Photos
+    |--------------------------------------------------------------------------
+    |
+    | centris:photos queues one download job per photo. Files are
+    | content-addressed ({sha256}.{ext}) inside path, so identical
+    | bytes are stored once. Leave queue null for the default queue.
+    |
+    */
+
+    'photos' => [
+        'path' => env('CENTRIS_PHOTOS_PATH', storage_path('app/centris/photos')),
+        'queue' => env('CENTRIS_PHOTOS_QUEUE'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Column map profiles
     |--------------------------------------------------------------------------
     |
