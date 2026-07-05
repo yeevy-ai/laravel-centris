@@ -52,6 +52,34 @@ class SyncListings
 }
 ```
 
+### Synchronisation
+
+Implémentez `ListingRepository` contre votre stockage et liez-la dans un fournisseur de services :
+
+```php
+$this->app->singleton(
+    \Yeevy\CentrisPasserelle\Contracts\ListingRepository::class,
+    EloquentListingRepository::class,
+);
+```
+
+Puis lancez la synchronisation (validation de dérive, upsert avec saut des lignes inchangées, réconciliation des retraits) :
+
+```bash
+php artisan centris:sync                 # utilise centris.feed_path
+php artisan centris:sync --path=/depot   # dossier ou fichier explicite
+```
+
+Les événements du noyau traversent le système d'événements Laravel — écoutez-les comme d'habitude :
+
+```php
+Event::listen(function (\Yeevy\CentrisPasserelle\Events\ListingRemoved $event) {
+    // dépublier $event->mlsNumber
+});
+```
+
+Planifiez-la comme n'importe quelle commande : `Schedule::command('centris:sync')->twiceDaily(6, 18);`
+
 ### Configuration
 
 `config/centris.php` :
@@ -63,8 +91,8 @@ class SyncListings
 
 ### Feuille de route
 
-- Commande `centris:sync` (récupération FTP, upsert, réconciliation) — dépend du pipeline du paquet noyau
-- Jobs en file d'attente pour les photos, événements `ListingCreated` / `ListingUpdated` / `ListingRemoved`
+- Récupération FTP intégrée à `centris:sync` (via `FlysystemFeedSource` du noyau)
+- Jobs en file d'attente pour le téléchargement des photos
 
 ### Licence
 
@@ -112,6 +140,34 @@ class SyncListings
 }
 ```
 
+### Synchronization
+
+Implement `ListingRepository` against your storage and bind it in a service provider:
+
+```php
+$this->app->singleton(
+    \Yeevy\CentrisPasserelle\Contracts\ListingRepository::class,
+    EloquentListingRepository::class,
+);
+```
+
+Then run the sync (drift validation, dirty-hash upserts, removal reconciliation):
+
+```bash
+php artisan centris:sync                 # uses centris.feed_path
+php artisan centris:sync --path=/drop    # explicit directory or file
+```
+
+The core events flow through Laravel's event system — listen as usual:
+
+```php
+Event::listen(function (\Yeevy\CentrisPasserelle\Events\ListingRemoved $event) {
+    // unpublish $event->mlsNumber
+});
+```
+
+Schedule it like any command: `Schedule::command('centris:sync')->twiceDaily(6, 18);`
+
 ### Configuration
 
 `config/centris.php`:
@@ -123,8 +179,8 @@ class SyncListings
 
 ### Roadmap
 
-- `centris:sync` command (FTP fetch, upsert, reconciliation) — depends on the core package's pipeline
-- Queued photo jobs, `ListingCreated` / `ListingUpdated` / `ListingRemoved` events
+- Built-in FTP fetch for `centris:sync` (via the core's `FlysystemFeedSource`)
+- Queued photo download jobs
 
 ### License
 
