@@ -1,0 +1,30 @@
+# Local Claude instructions and settings (kept out of the public repo)
+CLAUDE.md
+.claude/
+
+# Never commit real feed data (hard constraint)
+*.TXT
+fixtures/real/
+# Synthetic fixtures only — never place real feed files here
+!tests/fixtures/synthetic/*.txt
+
+# Composer Related
+composer.lock
+/vendor
+
+# Caches
+.phpunit.cache
+.phpunit.result.cache
+/build
+/coverage
+
+# Editors
+/.idea
+/.fleet
+/.vscode
+.DS_Store
+
+# Local tool overrides
+phpunit.xml
+phpstan.neon
+testbench.yaml
