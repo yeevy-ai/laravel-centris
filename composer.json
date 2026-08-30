@@ -22,7 +22,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "guzzlehttp/guzzle": "^7.8",
+        "guzzlehttp/guzzle": "^8.1",
         "illuminate/contracts": "^12.0||^13.0",
         "league/flysystem": "^3.0",
         "league/flysystem-ftp": "^3.0",
